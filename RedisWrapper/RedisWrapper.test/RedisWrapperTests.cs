@@ -25,6 +25,8 @@ namespace RedisWrapper.Tests
         {
             TestObject cachedObj = RedisCacheWrapper.GetTypedValue<TestObject>(GetKey());
 
+            TestObject cachedObj1 = RedisCacheWrapper.GetTypedValue<TestObject>(GetKey());
+
             Assert.AreNotEqual(cachedObj, null);
         }
 

@@ -27,6 +27,10 @@ namespace RedisWrapper
 
         public int Port { get { return port; } }
 
+        private int connectType;
+
+        public ConnectType ConnectType { get { return (ConnectType)connectType; } }
+
         public static RedisWrapperConfiguration GetConfig()
         {
             return GetConfig<RedisWrapperConfiguration>("redis", "cache",true);
@@ -41,6 +45,8 @@ namespace RedisWrapper
                 host = node.GetStringAttribute("host", "127.0.0.1");
 
                 port = node.GetIntAttribute("port", 6379);
+
+                connectType = node.GetIntAttribute("connecttype", 1);
         }
     }
 }

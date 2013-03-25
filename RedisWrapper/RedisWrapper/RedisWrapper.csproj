@@ -50,6 +50,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -57,10 +58,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConnectType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RedisCacheWrapper.cs" />
     <Compile Include="RedisWrapperConfiguration.cs" />
     <Compile Include="RedisWrapperException.cs" />
+    <Compile Include="RedisWrapperHttpModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
