@@ -273,14 +273,14 @@ namespace RedisWrapper
         {
             keys = GetListKey<T>(keys);
 
-            SetList(keys, valueList, expireSeconds);
+            Set(keys, valueList.ToList(), expireSeconds);
         }
 
         public static void SetList<T>(string keyHeader, IList<string> keys, IList<T> valueList, int expireSeconds = 0)
         {
             keys = GetListKey<T>(keyHeader, keys);
 
-            SetList(keys, valueList, expireSeconds);
+            Set(keys, valueList.ToList(), expireSeconds);
         }
 
 
@@ -361,7 +361,7 @@ namespace RedisWrapper
             return result;
         }
 
-        private static void SetList<T>(IList<string> fullKeys, List<T> values, int expireSeconds = 0)
+        private static void Set<T>(IList<string> fullKeys, List<T> values, int expireSeconds = 0)
         {
             RedisClient redisClient = null;
 
