@@ -269,8 +269,7 @@ namespace RedisWrapper
         {
             for(int i=0;i<keys.Length;i++)
             {
-                string key = keys[i];
-                key = GetKey<T>(key);
+                keys[i] = GetKey<T>(keys[i]);
             }
 
             return DeleteKeys<T>(keys);
@@ -281,8 +280,7 @@ namespace RedisWrapper
         {
             for (int i = 0; i < keys.Length; i++)
             {
-                string key = keys[i];
-                key = GetKey<T>(keyHeader,key);
+                keys[i] = GetKey<T>(keyHeader, keys[i]);
             }
 
             return DeleteKeys<T>(keys);
@@ -293,8 +291,7 @@ namespace RedisWrapper
         {
             for (int i = 0; i < keys.Length; i++)
             {
-                string key = keys[i];
-                key = GetCollectionKey<T>(key);
+                keys[i] = GetCollectionKey<T>(keys[i]);
             }
 
             return DeleteKeys<T>(keys);
@@ -304,8 +301,7 @@ namespace RedisWrapper
         {
             for (int i = 0; i < keys.Length; i++)
             {
-                string key = keys[i];
-                key = GetCollectionKey<T>(header,key);
+                keys[i] = GetCollectionKey<T>(header, keys[i]);
             }
 
             return DeleteKeys<T>(keys);
