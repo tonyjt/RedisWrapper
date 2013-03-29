@@ -119,7 +119,7 @@ namespace RedisWrapper
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        /// <param name="expireSeconds">-1：not expired, 0:default expire secons</param>
+        /// <param name="expireSeconds">-1：not expired, 0:default expire seconds</param>
         public static void SetEntry<T>(string key, T value, int expireSeconds = 0)
         {
             string fullKey = GetKey<T>(key);
@@ -495,8 +495,15 @@ namespace RedisWrapper
             switch (RedisWrapperConfiguration.GetConfig().ConnectType)
             {
                 case ConnectType.HttpRequest:
-                    client = GetRedisClientFromHttpContext();
-                    break;
+                    if (HttpContext.Current != null)
+                    {
+                        client = GetRedisClientFromHttpContext();
+                        break;
+                    }
+                    else
+                    {
+                        goto default;
+                    }
                 default:
                     client = CreateRedisClient();
                     break;
