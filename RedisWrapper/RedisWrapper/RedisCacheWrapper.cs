@@ -530,8 +530,21 @@ namespace RedisWrapper
 
         private static RedisClient CreateRedisClient()
         {
-            return new RedisClient(RedisWrapperConfiguration.GetConfig().Host,
-               RedisWrapperConfiguration.GetConfig().Port);
+            string password = RedisWrapperConfiguration.GetConfig().Password;
+
+
+            if (!string.IsNullOrWhiteSpace(password))
+            {
+
+                return new RedisClient(RedisWrapperConfiguration.GetConfig().Host,
+                   RedisWrapperConfiguration.GetConfig().Port, password);
+            }
+            else
+            {
+
+                return new RedisClient(RedisWrapperConfiguration.GetConfig().Host,
+                   RedisWrapperConfiguration.GetConfig().Port);
+            }
         }
 
         public static void DisposeRedisClient(RedisClient client)
