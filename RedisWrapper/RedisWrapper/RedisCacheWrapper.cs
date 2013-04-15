@@ -75,14 +75,7 @@ namespace RedisWrapper
             {
                 result = funGet(para);
 
-                try
-                {
-                    Set<R>(fullKey, result, expireSeconds);
-                }
-                catch (RedisWrapperException ex)
-                {
-                    //..Write log
-                }
+                Set<R>(fullKey, result, expireSeconds);
             }
 
             return result;
