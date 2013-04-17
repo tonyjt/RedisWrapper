@@ -129,6 +129,8 @@ namespace RedisWrapper
 
         private static void Set<T>(string fullKey, T value, int expireSeconds = 0)
         {
+            if (object.Equals(value, default(T))) return;
+
             RedisClient redisClient = null;
 
             try
@@ -356,6 +358,8 @@ namespace RedisWrapper
 
         private static void Set<T>(IList<string> fullKeys, List<T> values, int expireSeconds = 0)
         {
+            if (values == null) return;
+
             RedisClient redisClient = null;
 
             try
