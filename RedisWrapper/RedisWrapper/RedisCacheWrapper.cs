@@ -21,16 +21,16 @@ namespace RedisWrapper
         /// <typeparam name="T">generic class</typeparam>
         /// <param name="key">key </param>
         /// <returns></returns>
-        public static T GetTypedValue<T>(string key)
+        public static T GetTypedValue<T>(string key, RedisClient client = null)
         {
             string fullKey = GetKey<T>(key);
 
-            return Get<T>(fullKey);
+            return Get<T>(fullKey,client);
         }
 
-        public static T GetTypedValue<T>(string keyHeader, string key)
+        public static T GetTypedValue<T>(string keyHeader, string key, RedisClient client = null)
         {
-            return Get<T>(GetKey<T>(keyHeader, key));
+            return Get<T>(GetKey<T>(keyHeader, key), client);
         }
 
 
@@ -43,19 +43,19 @@ namespace RedisWrapper
         /// <param name="funGet">Get real value if it is null</param>
         /// <param name="expireSeconds">-1：not expired, 0:default expire secons</param>
         /// <returns></returns>
-        public static R GetTypedValue<P, R>(P para, Func<P, R> funGet, int expireSeconds = 0)
+        public static R GetTypedValue<P, R>(P para, Func<P, R> funGet, int expireSeconds = 0, RedisClient client = null)
         {
             string key = GetKey<R>(para.ToString());
 
-            return Get<P, R>(key, para, funGet, expireSeconds);
+            return Get<P, R>(key, para, funGet, expireSeconds,client);
 
         }
 
-        public static R GetTypedValue<P, R>(string keyHeader, P para, Func<P, R> funGet, int expireSeconds = 0)
+        public static R GetTypedValue<P, R>(string keyHeader, P para, Func<P, R> funGet, int expireSeconds = 0,RedisClient client = null )
         {
             string key = GetKey<R>(keyHeader,para.ToString());
 
-            return Get<P, R>(key, para, funGet, expireSeconds);
+            return Get<P, R>(key, para, funGet, expireSeconds, client);
         }
 
         /// <summary>
@@ -67,21 +67,21 @@ namespace RedisWrapper
         /// <param name="funGet">Get real value if it is null</param>
         /// <param name="expireSeconds">-1：not expired, 0:default expire secons</param>
         /// <returns></returns>
-        private static R Get<P, R>(string fullKey, P para, Func<P, R> funGet, int expireSeconds = 0)
+        private static R Get<P, R>(string fullKey, P para, Func<P, R> funGet, int expireSeconds, RedisClient client)
         {
-            R result = Get<R>(fullKey);
+            R result = Get<R>(fullKey, client);
 
             if (EqualsDefaultValue<R>(result))
             {
                 result = funGet(para);
 
-                Set<R>(fullKey, result, expireSeconds);
+                Set<R>(fullKey, result, expireSeconds, client);
             }
 
             return result;
         }
 
-        private static T Get<T>(string fullKey)
+        private static T Get<T>(string fullKey, RedisClient client)
         {
             T result;
 
@@ -89,7 +89,7 @@ namespace RedisWrapper
 
             try
             {
-                redisClient = GetRedisClient();
+                redisClient = client == null? GetRedisClient():client;
 
                 IRedisTypedClient<T> redis = redisClient.As<T>();
 
@@ -102,7 +102,7 @@ namespace RedisWrapper
             }
             finally
             {
-                ReleaseRedisClient(redisClient);
+                if(client == null)  ReleaseRedisClient(redisClient);
             }
             return result;
         }
@@ -113,21 +113,21 @@ namespace RedisWrapper
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="expireSeconds">-1：not expired, 0:default expire seconds</param>
-        public static void SetEntry<T>(string key, T value, int expireSeconds = 0)
+        public static void SetEntry<T>(string key, T value, int expireSeconds = 0, RedisClient client = null)
         {
             string fullKey = GetKey<T>(key);
 
-            Set(fullKey, value, expireSeconds);
+            Set(fullKey, value, expireSeconds, client);
         }
 
-        public static void SetEntry<T>(string keyHeader, string key, T value, int expireSeconds = 0)
+        public static void SetEntry<T>(string keyHeader, string key, T value, int expireSeconds = 0, RedisClient client = null)
         {
             string fullKey = GetKey<T>(keyHeader, key);
 
-            Set(fullKey, value, expireSeconds);
+            Set(fullKey, value, expireSeconds,client);
         }
 
-        private static void Set<T>(string fullKey, T value, int expireSeconds = 0)
+        private static void Set<T>(string fullKey, T value, int expireSeconds,RedisClient client)
         {
             if (object.Equals(value, default(T))) return;
 
@@ -135,7 +135,7 @@ namespace RedisWrapper
 
             try
             {
-                redisClient = GetRedisClient();
+                redisClient = client== null?GetRedisClient():client;
 
                 IRedisTypedClient<T> redis = redisClient.As<T>();
 
@@ -158,39 +158,39 @@ namespace RedisWrapper
             }
             finally
             {
-                ReleaseRedisClient(redisClient);
+                if(client == null)   ReleaseRedisClient(redisClient);
             }
         }
 
-        public static bool Delete<T>(string key)
+        public static bool Delete<T>(string key, RedisClient client = null)
         {
-            return Delete<T>(new string[] { key });
+            return Delete<T>(new string[] { key },client);
         }
 
-        public static bool Delete<T>(string keyHeader, string key)
+        public static bool Delete<T>(string keyHeader, string key, RedisClient client = null)
         {
-            return Delete<T>(keyHeader, new string[] { key });
+            return Delete<T>(keyHeader, new string[] { key },client);
         }
 
-        public static bool Delete<T>(string[] keys)
+        public static bool Delete<T>(string[] keys, RedisClient client = null)
         {
             for (int i = 0; i < keys.Length; i++)
             {
                 keys[i] = GetKey<T>(keys[i]);
             }
 
-            return DeleteKeys<T>(keys);
+            return DeleteKeys<T>(keys,client);
         }
 
 
-        public static bool Delete<T>(string keyHeader, string[] keys)
+        public static bool Delete<T>(string keyHeader, string[] keys, RedisClient client = null)
         {
             for (int i = 0; i < keys.Length; i++)
             {
                 keys[i] = GetKey<T>(keyHeader, keys[i]);
             }
 
-            return DeleteKeys<T>(keys);
+            return DeleteKeys<T>(keys, client);
         }
 
 
@@ -203,28 +203,28 @@ namespace RedisWrapper
         /// <typeparam name="T">对象</typeparam>
         /// <param name="key">通配符（*代表不限，?代表某1位不限）</param>
         /// <returns></returns>
-        public static IList<T> GetTypedValueList<T>(string key)
+        public static IList<T> GetTypedValueList<T>(string key, RedisClient client = null)
         {
-            return GetTypedValueList<T>(new List<string> { key });
+            return GetTypedValueList<T>(new List<string> { key },client);
         }
 
-        public static IList<T> GetTypedValueList<T>(List<string> keys)
+        public static IList<T> GetTypedValueList<T>(List<string> keys,RedisClient client = null)
         {
             keys = GetListKey<T>(keys).ToList();
 
-            return GetList<T>(keys);
+            return GetList<T>(keys,client);
         }
 
-        public static IList<T> GetTypedValueList<T>(string keyHeader, string key)
+        public static IList<T> GetTypedValueList<T>(string keyHeader, string key, RedisClient client = null)
         {
-            return GetTypedValueList<T>(keyHeader, new List<string> { key });
+            return GetTypedValueList<T>(keyHeader, new List<string> { key },client);
         }
 
-        public static IList<T> GetTypedValueList<T>(string keyHeader, List<string> keys)
+        public static IList<T> GetTypedValueList<T>(string keyHeader, List<string> keys, RedisClient client = null)
         {
             keys = GetListKey<T>(keyHeader, keys).ToList();
 
-            return GetList<T>(keys);
+            return GetList<T>(keys, client);
         }
 
         //public static IList<R> GetTypedValueList<P, R>(P para, Func<P, IList<R>> funGet, int expireSeconds = 0)
@@ -264,18 +264,18 @@ namespace RedisWrapper
         //}
 
 
-        public static void SetList<T>(IList<string> keys, IList<T> valueList, int expireSeconds = 0)
+        public static void SetList<T>(IList<string> keys, IList<T> valueList, int expireSeconds = 0, RedisClient client = null)
         {
             keys = GetListKey<T>(keys);
 
-            Set(keys, valueList.ToList(), expireSeconds);
+            Set(keys, valueList.ToList(), expireSeconds, client);
         }
 
-        public static void SetList<T>(string keyHeader, IList<string> keys, IList<T> valueList, int expireSeconds = 0)
+        public static void SetList<T>(string keyHeader, IList<string> keys, IList<T> valueList, int expireSeconds = 0, RedisClient client = null)
         {
             keys = GetListKey<T>(keyHeader, keys);
 
-            Set(keys, valueList.ToList(), expireSeconds);
+            Set(keys, valueList.ToList(), expireSeconds,client);
         }
 
 
@@ -293,9 +293,9 @@ namespace RedisWrapper
         /// <typeparam name="T">T,not List</typeparam>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static bool DeleteList<T>(string key)
+        public static bool DeleteList<T>(string key, RedisClient client = null)
         {
-            return DeleteList<T>(new string[] { key });
+            return DeleteList<T>(new string[] { key },client);
         }
         /// <summary>
         /// 删除列表
@@ -303,34 +303,34 @@ namespace RedisWrapper
         /// <typeparam name="T">T,not List</typeparam>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static bool DeleteList<T>(string keyHeader, string key)
+        public static bool DeleteList<T>(string keyHeader, string key, RedisClient client = null)
         {
-            return DeleteList<T>(keyHeader,new string[] { key });
+            return DeleteList<T>(keyHeader, new string[] { key }, client);
         }
 
-       
-      
-        public static bool DeleteList<T>(string[] keys)
+
+
+        public static bool DeleteList<T>(string[] keys, RedisClient client = null)
         {
             for (int i = 0; i < keys.Length; i++)
             {
                 keys[i] = GetListKey<T>(keys[i]);
             }
 
-            return DeleteKeys<T>(keys);
+            return DeleteKeys<T>(keys, client);
         }
 
-        public static bool DeleteList<T>(string header,string[] keys)
+        public static bool DeleteList<T>(string header, string[] keys, RedisClient client = null)
         {
             for (int i = 0; i < keys.Length; i++)
             {
                 keys[i] = GetListKey<T>(header, keys[i]);
             }
 
-            return DeleteKeys<T>(keys);
+            return DeleteKeys<T>(keys,client);
         }
 
-        private static IList<T> GetList<T>(List<string> fullKeys)
+        private static IList<T> GetList<T>(List<string> fullKeys, RedisClient client)
         {
             IList<T> result;
 
@@ -338,7 +338,7 @@ namespace RedisWrapper
 
             try
             {
-                redisClient = GetRedisClient();
+                redisClient = client == null?GetRedisClient():client;
 
                 IRedisTypedClient<T> redis = redisClient.As<T>();
 
@@ -351,12 +351,12 @@ namespace RedisWrapper
             }
             finally
             {
-                ReleaseRedisClient(redisClient);
+                if(client == null)ReleaseRedisClient(redisClient);
             }
             return result;
         }
 
-        private static void Set<T>(IList<string> fullKeys, List<T> values, int expireSeconds = 0)
+        private static void Set<T>(IList<string> fullKeys, List<T> values, int expireSeconds,RedisClient client)
         {
             if (values == null) return;
 
@@ -364,7 +364,7 @@ namespace RedisWrapper
 
             try
             {
-                redisClient = GetRedisClient();
+                redisClient = client == null?GetRedisClient():client;
 
                 IRedisTypedClient<T> redis = redisClient.As<T>();
 
@@ -393,7 +393,7 @@ namespace RedisWrapper
             }
             finally
             {
-                ReleaseRedisClient(redisClient);
+                if(client == null)ReleaseRedisClient(redisClient);
             }
         }
 
@@ -418,7 +418,7 @@ namespace RedisWrapper
             return keys;
         }
         #endregion
-        private static bool DeleteKeys<T>(string[] keys)
+        private static bool DeleteKeys<T>(string[] keys,RedisClient client)
         {
             try
             {
@@ -525,7 +525,7 @@ namespace RedisWrapper
        
         //private static void Dispose
 
-        private static RedisClient CreateRedisClient()
+        public static RedisClient CreateRedisClient()
         {
             string password = RedisWrapperConfiguration.GetConfig().Password;
 

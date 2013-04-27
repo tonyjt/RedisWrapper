@@ -15,7 +15,7 @@ namespace RedisWrapper
             app.EndRequest += new EventHandler(EndRequestEventHandler);
         }
 
-        private static void EndRequestEventHandler(object sender, EventArgs args)
+        private void EndRequestEventHandler(object sender, EventArgs args)
         {
             string clientKey = RedisCacheWrapper.clientKey;
             HttpContext context = ((HttpApplication)sender).Context;
