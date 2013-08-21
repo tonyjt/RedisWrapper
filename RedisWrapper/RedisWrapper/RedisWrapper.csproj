@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>RedisWrapper</RootNamespace>
     <AssemblyName>RedisWrapper</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,11 +31,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Configuration">
-      <HintPath>..\lib\Configuration.dll</HintPath>
+    <Reference Include="Configuration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Configuration.dll</HintPath>
     </Reference>
-    <Reference Include="CustomExtension">
-      <HintPath>..\lib\CustomExtension.dll</HintPath>
+    <Reference Include="CustomExtension, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\CustomExtension.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.Common">
       <HintPath>..\packages\ServiceStack.Common.3.9.42\lib\net35\ServiceStack.Common.dll</HintPath>
@@ -67,6 +70,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Configuration.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
